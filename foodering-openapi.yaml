@@ -1,0 +1,293 @@
+openapi: 3.0.1
+info:
+  title: Foodering Service - OpenAPI 3.0
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: info@crossdimension.in
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: '1.0.0'
+servers:
+- url: https://crossdimension.in
+- url: http://crossdimension.in
+
+paths:
+  /register:
+    post:
+      tags: 
+        - Restaurant Management
+      summary: Insertion of Restaurant in Foodering System - A Cross Dimension Unit
+      description: Creates New entry of a Restaurant
+      operationId: registerRestaurant
+      parameters:
+        - in: header
+          name: x-tenant-id
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Restaurant'
+        required: true
+      responses:
+        200:
+          description: |
+            *OK* - Inserted Restaurant details Will be returned Successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Restaurant'
+        400:
+          description: |
+            *Error* - Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: |
+            *Error* - Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: |
+            *Error* - Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-codegen-request-body-name: Restaurant Data
+  /platter:
+    post:
+      tags: 
+        - Restaurant Management
+      summary: Insertion of Platter for a particular restaurant
+      description: Creates New entry of a Platter in Restaurant
+      operationId: createPlatters
+      parameters:
+        - in: header
+          name: x-tenant-id
+          description: "Must be a valid restaurant id"
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Platter'
+        required: true
+      responses:
+        200:
+          description: |
+            *OK* - Inserted platter details Will be returned Successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Platter'
+        400:
+          description: |
+            *Error* - Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: |
+            *Error* - Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: |
+            *Error* - Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-codegen-request-body-name: Platter Data
+  /cuisines:
+    post:
+      tags: 
+        - Restaurant Management
+      summary: Insertion of Cuisines for a particular restaurant
+      description: Creates New entry of a Cuisines in Restaurant
+      operationId: createCuisines
+      parameters:
+        - in: header
+          name: x-tenant-id
+          description: "Must be a valid restaurant id"
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Cuisines'
+        required: true
+      responses:
+        200:
+          description: |
+            *OK* - Inserted cuisines details Will be returned Successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Cuisines'
+        400:
+          description: |
+            *Error* - Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: |
+            *Error* - Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: |
+            *Error* - Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-codegen-request-body-name: Platter Data    
+                
+components:
+  schemas:
+    Restaurant:
+      required:
+      - id
+      - name
+      - logo
+      - restaurantType
+      type: object
+      properties:
+        id:
+          type: string
+          description: "Id of Particular Restaurant"
+        name:
+          type: string
+          description: "Name of Particular Restaurant"
+        logo:
+          type: string
+          format: binary
+          description: "Logo of a particular restaurant"
+        registrationDate:
+          type: string
+          description: "Registration Date for the restaurant"
+        activationDate:
+          type: string
+          description: "Date of approval / activation of account"
+        status:
+          $ref: '#/components/schemas/RestaurantStatus'
+        restaurantType:
+          $ref: '#/components/schemas/RestaurantType'
+        renewalDate:
+          type: string
+          description: "Date of renewal / re-activation of account"
+        lastBilledDate:
+          type: string
+          description: "Date of last paid subscription date of account"
+          
+    Platter:
+      required:
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: "Id of Particular Platter"
+        name:
+          type: string
+          description: "Name of Particular Platter"
+        displayName:
+          type: string
+          description: "Customer display Name of Particular Platter"
+          
+    Cuisines:
+      required:
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: "Id of Particular Cuisines"
+        name:
+          type: string
+          description: "Name of Particular Cuisines"
+        displayName:
+          type: string
+          description: "Customer display name of Particular Cuisines"
+        
+    RestaurantStatus:
+      type: string
+      enum:
+      - REG_INIT
+      - REG_APPROVED
+      - REG_DECLINED
+      - ACC_ACTIVE
+      - ACC_DEACTIVE
+      - ACC_RENEWAL_PENDING
+      - ACC_TERMINATED
+      
+    RestaurantType:
+      type: string
+      enum:
+      - TAKE_AWAY
+      - DINE_IN
+      
+    PatchElement:
+      type: array
+      items:
+        type: object
+        properties:
+          op:
+            type: string
+            description: |
+              Operation To be performed
+            example: add, remove, replace
+          value:
+            type: string
+          path:
+            type: string
+            description: |
+              Object Path to be Patched
+   
+    Error:
+      type: object
+      properties:
+        status:
+          type: string
+          description: |
+            Status of the error code
+        message:
+          type: string
+          description: |
+            Error message
+        details:
+          type: string
+          description: |
+            Error Details
+        path:
+          type: string
+          description: |
+            Error Path
+    
