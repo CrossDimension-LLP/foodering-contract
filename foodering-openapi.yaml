@@ -169,7 +169,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'  
-      
   /platter:
     post:
       tags: 
@@ -241,6 +240,56 @@ paths:
         200:
           description: |
             *OK* - Get all platter details Will be returned Successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Platter'
+        400:
+          description: |
+            *Error* - Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: |
+            *Error* - Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: |
+            *Error* - Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'  
+    delete:
+      tags: 
+        - Restaurant Management
+      summary: Delete the Platters for a particular restaurant
+      description: Delete the Platters in Restaurant
+      operationId: deletePlatters
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          description: "Must be a valid restaurant id"
+          schema:
+            type: string
+        - in: query
+          name: platterId
+          required: true
+          description: "Single / Multiple platter ids comma [,] separated - Atleast one id needed"
+          schema:
+            type: string
+      responses:
+        200:
+          description: |
+            *OK* - Get all deleted platter details Will be returned Successfully
           content:
             application/json:
               schema:
@@ -371,6 +420,56 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+    delete:
+      tags: 
+        - Restaurant Management
+      summary: Delete the Cuisines for a particular restaurant
+      description: Delete the Cuisines in Restaurant
+      operationId: deleteCuisines
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          description: "Must be a valid restaurant id"
+          schema:
+            type: string
+        - in: query
+          name: cuisineId
+          required: true
+          description: "Single / Multiple cuisine ids comma [,] separated - Atleast one id needed"
+          schema:
+            type: string
+      responses:
+        200:
+          description: |
+            *OK* - Get all deleted cuisine details Will be returned Successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Cuisines'
+        400:
+          description: |
+            *Error* - Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: |
+            *Error* - Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: |
+            *Error* - Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'  
                 
   /items:
     post:
@@ -490,13 +589,14 @@ paths:
             type: string
         - in: query
           name: itemId
-          description: "Single / Multiple item ids comma [,] separated"
+          required: true
+          description: "Single / Multiple item ids comma [,] separated - Atleast one id needed"
           schema:
             type: string
       responses:
         200:
           description: |
-            *OK* - Get all menu items details Will be returned Successfully
+            *OK* - Get all deleted menu items details Will be returned Successfully
           content:
             application/json:
               schema:
@@ -574,6 +674,62 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'  
+                
+  /billing:
+    post:
+      tags: 
+        - Billing Management
+      summary: Billing for a Restaurant for a specific table
+      description: Creates Bills for a customer
+      operationId: createBilling
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          description: "Must be a valid restaurant id"
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/BillingData'
+        required: true
+      responses:
+        200:
+          description: |
+            *OK* - Inserted Items details Will be returned Successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+        400:
+          description: |
+            *Error* - Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: |
+            *Error* - Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: |
+            *Error* - Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-codegen-request-body-name: Billling Data
+      
       
                 
 components:
@@ -714,6 +870,7 @@ components:
         displayName:
           type: string
           description: "Customer display name of Particular Cuisines"
+          
     Item:
       required:
         - id
@@ -745,6 +902,53 @@ components:
           description: "Eligible for tax or not"
         status:
           $ref: '#/components/schemas/ItemStatus'
+        ingredients:
+          type: string
+          description: "Ingredients details to make an item"
+          
+    BilledItem:
+      required:
+        - id
+        - name
+        - price
+      type: object
+      properties:
+        id:
+          type: string
+          description: "Id of a particular food item"
+        name:
+          type: string
+          description: "Name of the item"
+        price:
+          type: number
+          description: "Price of the item"
+        quantity:
+          type: number
+          description: "Quantity of the item"
+          default: 1
+        taxAllowed:
+          type: boolean
+          description: "Eligible for tax or not"
+          
+    BillingData:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "Id of a particular biiling"
+        tableNumber:
+          type: number
+          description: "Table number for a particular restaurant"
+        itemList:
+          type: array
+          items:
+            $ref: '#/components/schemas/BilledItem'
+        customerMobile:
+          type: string
+          description: "Promotional Purpose - fututre scope"
+        billingDate:
+          type: string
+          description: "Billing time for the transaction"
         
     RestaurantStatus:
       type: string
